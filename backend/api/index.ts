@@ -1,12 +1,7 @@
-import express from 'express';
-
 import { createApp } from '../src/app';
 
-// Vercel serverless entry point. The API is mounted under /api so it shares the
-// frontend's domain in production (keeping the auth cookie first-party). There
-// is no long-running HTTP server or Socket.IO here — those live in src/index.ts
-// for local development only.
-const server = express();
-server.use('/api', createApp());
-
-export default server;
+// Vercel serverless entry point for the backend service. Exports the Express
+// app as a handler (no app.listen — that's src/index.ts, for local dev only).
+// createApp() strips a leading /api internally, so requests routed here as
+// /api/* resolve to the real routes (/auth, /notes) in every environment.
+export default createApp();
