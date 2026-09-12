@@ -31,9 +31,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     onSuccess: (user) => queryClient.setQueryData(ME_QUERY_KEY, user),
   });
 
+  // Signup intentionally does NOT cache the user as the current session:
+  // we want new users to log in explicitly, so the client stays signed out.
   const signupMutation = useMutation({
     mutationFn: authApi.signup,
-    onSuccess: (user) => queryClient.setQueryData(ME_QUERY_KEY, user),
   });
 
   const logoutMutation = useMutation({
@@ -45,7 +46,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user: meQuery.data ?? null,
     isLoading: meQuery.isLoading,
     login: (input) => loginMutation.mutateAsync(input),
-    signup: (input) => signupMutation.mutateAsync(input),
+    signup: async (input) => {
+      // The backend sets an auth cookie on signup; clear it so the new user
+      // is redirected to the login page and signs in explicitly.
+      const user = await signupMutation.mutateAsync(input);
+      await logoutMutation.mutateAsync();
+      return user;
+    },
     logout: () => logoutMutation.mutateAsync(),
   };
 

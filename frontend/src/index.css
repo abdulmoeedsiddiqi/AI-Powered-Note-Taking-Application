@@ -481,6 +481,12 @@ body {
   color: #dc2626;
 }
 
+.auth-success {
+  margin: 0;
+  font-size: 13px;
+  color: #16a34a;
+}
+
 .auth-submit {
   margin-top: 6px;
   padding: 12px;

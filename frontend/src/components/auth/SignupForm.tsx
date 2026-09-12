@@ -26,7 +26,7 @@ export function SignupForm() {
     setIsSubmitting(true);
     try {
       await signup({ name, email, password });
-      navigate('/notes');
+      navigate('/login', { state: { registered: true } });
     } catch {
       setError('Could not create your account. That email may already be registered.');
     } finally {
