@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { useClickOutside } from '../../hooks/useClickOutside';
 import { useDeleteNote, useUpdateNote } from '../../hooks/useNotes';
 import { resolveAssetUrl } from '../../lib/assetUrl';
 import { formatDuration, formatRelativeTime } from '../../lib/noteCardFormat';
@@ -12,6 +13,8 @@ export function NoteCard({ note }: { note: Note }) {
   const updateNote = useUpdateNote();
   const deleteNote = useDeleteNote();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  useClickOutside(menuRef, () => setIsMenuOpen(false), isMenuOpen);
 
   const preview = extractNotePreview(note.content);
   const videoAsset = note.assets?.find((asset) => asset.kind === 'VIDEO');
@@ -34,7 +37,7 @@ export function NoteCard({ note }: { note: Note }) {
     >
       <div className="note-card-header">
         <h3>{note.title}</h3>
-        <div className="note-card-menu">
+        <div className="note-card-menu" ref={menuRef}>
           {note.pinned && (
             <span className="note-card-pin" aria-label="Pinned">
               ★

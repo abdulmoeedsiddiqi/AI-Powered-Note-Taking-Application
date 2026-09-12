@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../context/AuthContext';
+import { useClickOutside } from '../../hooks/useClickOutside';
 
 function getInitials(name: string): string {
   return name
@@ -16,6 +17,8 @@ export function AvatarMenu() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  useClickOutside(menuRef, () => setIsOpen(false), isOpen);
 
   if (!user) {
     return null;
@@ -28,7 +31,7 @@ export function AvatarMenu() {
   }
 
   return (
-    <div className="avatar-menu">
+    <div className="avatar-menu" ref={menuRef}>
       <button
         type="button"
         className="avatar-button"

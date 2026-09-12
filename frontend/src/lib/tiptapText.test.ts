@@ -46,4 +46,16 @@ describe('extractNotePreview', () => {
   it('returns an empty string for null content', () => {
     expect(extractNotePreview(null)).toBe('');
   });
+
+  it('keeps paragraph breaks as line breaks so the card preview is not run-on', () => {
+    const doc = {
+      type: 'doc',
+      content: [
+        { type: 'paragraph', content: [{ type: 'text', text: 'First paragraph.' }] },
+        { type: 'paragraph', content: [{ type: 'text', text: 'Second paragraph.' }] },
+      ],
+    };
+
+    expect(extractNotePreview(doc)).toBe('First paragraph.\nSecond paragraph.');
+  });
 });

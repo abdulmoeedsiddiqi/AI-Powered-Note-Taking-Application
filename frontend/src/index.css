@@ -257,6 +257,66 @@ body {
   color: var(--color-text-muted);
 }
 
+/* Drag-and-drop import */
+.import-dropzone-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(15, 15, 35, 0.55);
+  backdrop-filter: blur(2px);
+  pointer-events: none;
+}
+
+.import-dropzone-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 36px 52px;
+  border-radius: 16px;
+  border: 2px dashed var(--color-accent);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  text-align: center;
+}
+
+.import-dropzone-card svg {
+  color: var(--color-accent);
+}
+
+.import-dropzone-title {
+  margin: 4px 0 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.import-dropzone-hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.import-dropzone-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 95;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  font-size: 13px;
+  font-weight: 600;
+}
+
 .dashboard-main {
   flex: 1;
   padding: 24px 32px;
@@ -674,6 +734,7 @@ body {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  white-space: pre-line;
 }
 
 .note-card-thumbnail {

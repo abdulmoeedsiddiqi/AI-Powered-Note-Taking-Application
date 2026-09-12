@@ -11,6 +11,12 @@ jest.mock('../../api/notes.api', () => ({
   exportNotesFile: jest.fn(),
   importNotes: jest.fn(),
   importNoteFile: jest.fn(),
+  createNote: jest.fn(),
+}));
+
+const importedDoc = { type: 'doc', content: [{ type: 'paragraph' }] };
+jest.mock('../../lib/importContent', () => ({
+  fileTextToNoteContent: jest.fn(() => importedDoc),
 }));
 const mockedNotesApi = notesApi as jest.Mocked<typeof notesApi>;
 
@@ -103,20 +109,21 @@ describe('Sidebar', () => {
     expect(await screen.findByText("Couldn't import that file. Make sure it's a notes export.")).toBeInTheDocument();
   });
 
-  it('imports a .txt file as a single note via the file-upload endpoint', async () => {
-    mockedNotesApi.importNoteFile.mockResolvedValueOnce({
-      imported: 1,
-      note: { id: 'n1', title: 'My note' } as never,
-    });
+  it('creates a note from a .txt file, titled from its first line of text', async () => {
+    mockedNotesApi.createNote.mockResolvedValueOnce({ id: 'n1', title: 'Shopping list' } as never);
     const user = userEvent.setup();
     renderSidebar();
 
-    const file = new File(['plain text content'], 'My note.txt', { type: 'text/plain' });
+    const file = new File(['Shopping list\nMilk\nEggs'], 'notes.txt', { type: 'text/plain' });
     const input = document.querySelector('.sidebar-file-input') as HTMLInputElement;
     await user.upload(input, file);
 
-    expect(await screen.findByText('Imported "My note".')).toBeInTheDocument();
-    expect(mockedNotesApi.importNoteFile.mock.calls[0]?.[0]).toBe(file);
+    expect(await screen.findByText('Created note "Shopping list".')).toBeInTheDocument();
+    expect(mockedNotesApi.createNote.mock.calls[0]?.[0]).toEqual({
+      title: 'Shopping list',
+      content: importedDoc,
+    });
+    expect(mockedNotesApi.importNoteFile).not.toHaveBeenCalled();
   });
 
   it('shows an error when a .pdf/.docx import fails', async () => {
@@ -129,7 +136,7 @@ describe('Sidebar', () => {
     await user.upload(input, file);
 
     expect(
-      await screen.findByText("Couldn't import that file. Make sure it's a .txt, .pdf, or .docx file."),
+      await screen.findByText("Couldn't import that file. Use a .txt, .md, .pdf, or .docx file."),
     ).toBeInTheDocument();
   });
 });

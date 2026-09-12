@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
 
+import { ImportDropZone } from '../common/ImportDropZone';
 import { Sidebar } from '../common/Sidebar';
 
 export function DashboardLayout() {
@@ -9,6 +10,7 @@ export function DashboardLayout() {
       <main className="dashboard-main">
         <Outlet />
       </main>
+      <ImportDropZone />
     </div>
   );
 }

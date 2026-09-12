@@ -2,8 +2,10 @@ import { useRef, useState } from 'react';
 import type { ChangeEvent } from 'react';
 import { NavLink } from 'react-router-dom';
 
-import type { ExportFormat, ImportNoteInput } from '../../api/notes.api';
-import { useExportNotes, useImportNoteFile, useImportNotes, useNotes } from '../../hooks/useNotes';
+import type { ExportFormat } from '../../api/notes.api';
+import { useClickOutside } from '../../hooks/useClickOutside';
+import { useExportNotes, useNotes } from '../../hooks/useNotes';
+import { useNoteImport } from '../../hooks/useNoteImport';
 import { downloadBlob } from '../../lib/downloadFile';
 
 function NavIcon({ path }: { path: string }) {
@@ -41,17 +43,17 @@ const EXPORT_FORMAT_OPTIONS: { format: ExportFormat; label: string }[] = [
 ];
 
 const IMPORT_FILE_ACCEPT =
-  '.json,.txt,.pdf,.docx,application/json,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+  '.json,.txt,.text,.md,.markdown,.csv,.log,.pdf,.docx,application/json,text/plain,text/markdown,text/csv,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
 export function Sidebar() {
   const { data } = useNotes();
   const counts = data?.counts;
   const exportNotes = useExportNotes();
-  const importNotes = useImportNotes();
-  const importNoteFile = useImportNoteFile();
+  const { importFile, status: importStatus, setStatus: setImportStatus, isImporting } = useNoteImport();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [importStatus, setImportStatus] = useState<string | null>(null);
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
+  const exportMenuRef = useRef<HTMLDivElement>(null);
+  useClickOutside(exportMenuRef, () => setIsExportMenuOpen(false), isExportMenuOpen);
 
   const items = [
     { to: '/notes', label: 'All notes', count: counts?.all, icon: ICONS.all, end: true },
@@ -82,35 +84,8 @@ export function Sidebar() {
     if (!file) {
       return;
     }
-
-    const isJson = file.name.toLowerCase().endsWith('.json') || file.type === 'application/json';
-
-    if (!isJson) {
-      try {
-        const result = await importNoteFile.mutateAsync(file);
-        setImportStatus(`Imported "${result.note.title}".`);
-      } catch {
-        setImportStatus("Couldn't import that file. Make sure it's a .txt, .pdf, or .docx file.");
-      }
-      return;
-    }
-
-    try {
-      const text = await file.text();
-      const parsed = JSON.parse(text) as { notes?: ImportNoteInput[] };
-      if (!Array.isArray(parsed.notes) || parsed.notes.length === 0) {
-        setImportStatus('That file has no notes to import.');
-        return;
-      }
-
-      const result = await importNotes.mutateAsync(parsed.notes);
-      setImportStatus(`Imported ${result.imported} note${result.imported === 1 ? '' : 's'}.`);
-    } catch {
-      setImportStatus("Couldn't import that file. Make sure it's a notes export.");
-    }
+    await importFile(file);
   }
-
-  const isImporting = importNotes.isPending || importNoteFile.isPending;
 
   return (
     <nav className="sidebar" aria-label="Notes navigation">
@@ -130,7 +105,7 @@ export function Sidebar() {
       ))}
 
       <div className="sidebar-secondary">
-        <div className="sidebar-export-menu">
+        <div className="sidebar-export-menu" ref={exportMenuRef}>
           <button
             type="button"
             className="sidebar-link sidebar-action"
