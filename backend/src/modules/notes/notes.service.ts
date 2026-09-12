@@ -1,7 +1,7 @@
 import type { Note } from '@prisma/client';
 
 import * as aiService from '../ai/ai.service';
-import { emitNoteEvent } from '../../socket/notesEvents';
+import { emitNoteEvent } from '../../lib/realtime';
 import { ApiError } from '../../utils/ApiError';
 import { extractPlainText } from '../../utils/tiptapText';
 import { countWords } from '../../utils/wordCount';

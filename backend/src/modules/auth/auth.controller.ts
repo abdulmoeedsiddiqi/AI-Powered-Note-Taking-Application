@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 
 import { env } from '../../config/env';
+import { createAblyTokenRequest, isRealtimeConfigured } from '../../lib/realtime';
 import { ApiError } from '../../utils/ApiError';
 import { asyncHandler } from '../../utils/asyncHandler';
 import { JWT_EXPIRES_IN_SECONDS } from '../../utils/jwt';
@@ -56,4 +57,14 @@ export const me = asyncHandler(async (req: Request, res: Response) => {
 export const logout = asyncHandler(async (_req: Request, res: Response) => {
   clearAuthCookie(res);
   res.status(204).send();
+});
+
+// Issues a short-lived Ably token scoped to the authenticated user's own
+// real-time channel, so the browser can subscribe without ever seeing the key.
+export const ablyToken = asyncHandler(async (req: Request, res: Response) => {
+  if (!isRealtimeConfigured()) {
+    throw ApiError.badRequest('Real-time is not configured on this server');
+  }
+  const tokenRequest = await createAblyTokenRequest(req.user!.id);
+  res.status(200).json(tokenRequest);
 });

@@ -1,14 +1,11 @@
-import { createServer } from 'http';
-
 import { createApp } from './app';
 import { env } from './config/env';
 import { logger } from './logger';
-import { createSocketServer } from './socket';
 
+// Real-time sync is delivered via Ably (see lib/realtime.ts), so no long-running
+// WebSocket server is needed — this runs fine on serverless too.
 const app = createApp();
-const httpServer = createServer(app);
-createSocketServer(httpServer);
 
-httpServer.listen(env.port, () => {
+app.listen(env.port, () => {
   logger.info(`Backend listening on port ${env.port} [${env.nodeEnv}]`);
 });

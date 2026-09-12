@@ -16,6 +16,9 @@ interface Env {
   aiBaseUrl: string;
   aiModel: string;
   aiEnableFallback: boolean;
+  // Ably powers real-time note sync (works on serverless/Vercel). Optional:
+  // leave unset to disable real-time without breaking anything.
+  ablyApiKey: string | undefined;
 }
 
 export const env: Env = {
@@ -30,4 +33,5 @@ export const env: Env = {
   aiBaseUrl: process.env.AI_BASE_URL ?? 'https://api.openai.com/v1',
   aiModel: process.env.AI_MODEL ?? 'gpt-4o-mini',
   aiEnableFallback: process.env.AI_ENABLE_FALLBACK === 'true',
+  ablyApiKey: process.env.ABLY_API_KEY,
 };

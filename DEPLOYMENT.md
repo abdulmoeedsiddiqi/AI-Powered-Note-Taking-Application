@@ -17,7 +17,7 @@ its routes (`/auth`, `/notes`) match in every environment.
 |---|---|---|
 | **Database** | Postgres in Docker (`docker compose up`) | Managed, **pooled** Postgres (Neon / Supabase / Vercel Postgres) |
 | **File uploads** | written to `backend/uploads/` on disk | **Vercel Blob** object storage (auto when `BLOB_READ_WRITE_TOKEN` is set) |
-| **Real-time sync** | Socket.IO (set `VITE_ENABLE_REALTIME=true`) | **Off** — serverless can't hold WebSocket connections. Lists still refresh via React Query on mutation + window focus. |
+| **Real-time sync** | [Ably](https://ably.com) (set `ABLY_API_KEY`) | **Ably** — the browser holds a WebSocket to Ably (not to our API), so live sync works on serverless. The backend publishes note events; the frontend gets a scoped token from `/auth/ably-token`. |
 | **Auth cookie** | `SameSite=Lax`, not Secure | `SameSite=Lax`, **Secure** (set `NODE_ENV=production`), first-party via same domain |
 | **Prisma** | single client | reused singleton + `rhel-openssl-3.0.x` engine target for the Vercel runtime |
 
@@ -67,9 +67,10 @@ Project → **Settings → Environment Variables** (Production):
 | `AI_MODEL` | e.g. `gpt-4o-mini` |
 | `AI_ENABLE_FALLBACK` | `true` |
 | `BLOB_READ_WRITE_TOKEN` | *(added automatically by the Blob store)* |
+| `ABLY_API_KEY` | a root API key from a free [Ably](https://ably.com) app — enables real-time sync |
 
-Frontend build vars are **optional**: `VITE_API_BASE_URL` defaults to `/api`, and
-`VITE_ENABLE_REALTIME` should stay unset (real-time is off on serverless).
+The frontend needs no build vars: `VITE_API_BASE_URL` defaults to `/api`, and
+real-time is configured entirely by the backend's `ABLY_API_KEY`.
 
 ### 5. Deploy
 
