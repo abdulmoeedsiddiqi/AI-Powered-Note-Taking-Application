@@ -1,15 +1,15 @@
 # Deploying to Vercel
 
-This app deploys as a **single Vercel project**: the React frontend is served
-as static files, and the Express backend runs as a serverless function under
-`/api` on the **same domain**. Same-domain keeps the auth cookie first-party
-(cross-domain cookies are blocked by modern browsers), so login works reliably.
+This app deploys as a **single Vercel project with two services**, wired by the
+root `vercel.json`:
 
-`vercel.json` at the repo root wires both together:
+- **`frontend`** service — root `frontend`, framework Vite → served at `/`
+- **`backend`** service — root `backend`, Express → served at `/api/*`
 
-- `frontend/` → `@vercel/static-build` → served at `/`
-- `backend/api/index.ts` → `@vercel/node` → served at `/api/*`
-- SPA fallback so client-side routes resolve to `index.html`
+Both share one domain, so the auth cookie stays **first-party** (cross-domain
+cookies are blocked by modern browsers), and the `/api/*` rewrite routes API
+calls to the backend. The Express app strips the `/api` prefix internally, so
+its routes (`/auth`, `/notes`) match in every environment.
 
 ## What changed for serverless (and the trade-offs)
 

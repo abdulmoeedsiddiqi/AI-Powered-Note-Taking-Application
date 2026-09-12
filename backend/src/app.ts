@@ -13,6 +13,18 @@ import { notesRouter } from './modules/notes/notes.routes';
 export function createApp(): Express {
   const app = express();
 
+  // When deployed behind Vercel's "/api" service rewrite, requests may arrive
+  // prefixed with /api. Strip it so the routes (/auth, /notes, /health) match
+  // in every environment; a no-op locally where there is no prefix.
+  app.use((req, _res, next) => {
+    if (req.url === '/api') {
+      req.url = '/';
+    } else if (req.url.startsWith('/api/')) {
+      req.url = req.url.slice(4);
+    }
+    next();
+  });
+
   app.use(httpLogger);
   app.use(cors({ origin: env.corsOrigin, credentials: true, exposedHeaders: ['Content-Disposition'] }));
   app.use(express.json({ limit: '10mb' }));
