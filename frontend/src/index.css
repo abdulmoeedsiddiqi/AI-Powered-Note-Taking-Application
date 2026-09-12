@@ -90,16 +90,10 @@ body {
 }
 
 .topbar-logo {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   width: 24px;
   height: 24px;
-  border-radius: 6px;
-  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-strong));
-  color: #1a1a2e;
-  font-weight: 700;
-  font-size: 13px;
+  object-fit: contain;
+  display: block;
 }
 
 .topbar-actions {
@@ -391,16 +385,10 @@ body {
 }
 
 .auth-logo {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   width: 40px;
   height: 40px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-strong));
-  color: #1a1a2e;
-  font-weight: 700;
-  font-size: 18px;
+  object-fit: contain;
+  display: inline-block;
   margin-bottom: 8px;
 }
 

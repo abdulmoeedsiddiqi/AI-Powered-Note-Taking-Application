@@ -12,7 +12,7 @@ export function AuthPage() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-brand">
-          <span className="auth-logo">N</span>
+          <img className="auth-logo" src="/favicon.svg" alt="Notebook" width={40} height={40} />
           <h1>Notebook</h1>
           <p className="auth-tagline">Write. Record. Keep.</p>
         </div>

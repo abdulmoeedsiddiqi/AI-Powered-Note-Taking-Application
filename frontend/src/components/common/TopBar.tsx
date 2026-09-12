@@ -51,7 +51,7 @@ export function TopBar() {
   return (
     <header className="topbar">
       <div className="topbar-brand">
-        <span className="topbar-logo">N</span>
+        <img className="topbar-logo" src="/favicon.svg" alt="Notebook" width={24} height={24} />
         <span className="topbar-title">Notebook</span>
       </div>
 
