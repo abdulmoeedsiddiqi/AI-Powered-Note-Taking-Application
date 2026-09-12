@@ -3,6 +3,7 @@ import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../context/AuthContext';
+import { getApiErrorMessage } from '../../lib/apiError';
 
 export function SignupForm() {
   const { signup } = useAuth();
@@ -27,8 +28,8 @@ export function SignupForm() {
     try {
       await signup({ name, email, password });
       navigate('/login', { state: { registered: true } });
-    } catch {
-      setError('Could not create your account. That email may already be registered.');
+    } catch (err) {
+      setError(getApiErrorMessage(err, "Could not create your account. Please try again."));
     } finally {
       setIsSubmitting(false);
     }

@@ -3,6 +3,7 @@ import type { FormEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../context/AuthContext';
+import { getApiErrorMessage } from '../../lib/apiError';
 
 export function LoginForm() {
   const { login } = useAuth();
@@ -22,8 +23,8 @@ export function LoginForm() {
     try {
       await login({ email, password });
       navigate('/notes');
-    } catch {
-      setError('Invalid email or password.');
+    } catch (err) {
+      setError(getApiErrorMessage(err, 'Invalid email or password.'));
     } finally {
       setIsSubmitting(false);
     }
