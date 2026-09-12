@@ -17,7 +17,10 @@ export function createApp(): Express {
   app.use(cors({ origin: env.corsOrigin, credentials: true, exposedHeaders: ['Content-Disposition'] }));
   app.use(express.json({ limit: '10mb' }));
   app.use(cookieParser());
-  app.use('/uploads', express.static(UPLOADS_ROOT));
+  // Only serve local disk uploads when not using Blob object storage (prod).
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    app.use('/uploads', express.static(UPLOADS_ROOT));
+  }
 
   app.get('/health', (_req: Request, res: Response) => {
     res.status(200).json({ status: 'ok', env: env.nodeEnv });

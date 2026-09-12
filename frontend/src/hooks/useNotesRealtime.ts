@@ -6,12 +6,18 @@ import { getSocket } from '../lib/socket';
 
 const NOTE_EVENTS = ['note:created', 'note:updated', 'note:deleted', 'note:restored', 'note:purged'] as const;
 
+// Socket.IO needs a long-running server, which Vercel's serverless functions
+// can't provide. Real-time is therefore opt-in via VITE_ENABLE_REALTIME=true
+// (local dev / a WebSocket-capable host). When off, note lists stay fresh via
+// React Query invalidation on mutations and refetch-on-focus.
+const REALTIME_ENABLED = import.meta.env.VITE_ENABLE_REALTIME === 'true';
+
 export function useNotesRealtime(): void {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (!user) {
+    if (!user || !REALTIME_ENABLED) {
       return;
     }
 

@@ -261,7 +261,15 @@ describe('notes controller (integration)', () => {
     expect(res.status).to.equal(201);
     expect(res.body.imported).to.equal(1);
     expect(res.body.note.title).to.equal('My Meeting Notes');
-    expect(res.body.note.content).to.equal('Line one\nLine two');
+    // The import builds a paragraph-structured document so the file's line
+    // breaks survive as real paragraphs instead of a single run-on block.
+    expect(res.body.note.content).to.deep.equal({
+      type: 'doc',
+      content: [
+        { type: 'paragraph', content: [{ type: 'text', text: 'Line one' }] },
+        { type: 'paragraph', content: [{ type: 'text', text: 'Line two' }] },
+      ],
+    });
   });
 
   it('rejects a file-import request with no file attached', async () => {

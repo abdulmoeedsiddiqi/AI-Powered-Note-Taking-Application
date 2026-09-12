@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+// Defaults to a same-origin "/api" path (the production Vercel setup); local
+// dev sets VITE_API_BASE_URL to the backend's full URL in frontend/.env.
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_BASE_URL ?? '/api',
   withCredentials: true,
 });
 

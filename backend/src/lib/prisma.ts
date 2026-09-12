@@ -13,6 +13,6 @@ export const prisma: PrismaClient =
     log: env.nodeEnv === 'development' ? ['warn', 'error'] : ['error'],
   });
 
-if (env.nodeEnv !== 'production') {
-  global.__prisma = prisma;
-}
+// Reuse a single client across (serverless) invocations to avoid exhausting
+// the database's connection pool. Safe in all environments.
+global.__prisma = prisma;
