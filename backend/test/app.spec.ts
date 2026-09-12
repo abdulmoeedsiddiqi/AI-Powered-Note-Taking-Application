@@ -23,4 +23,10 @@ describe('CORS', () => {
     expect(res.status).to.be.oneOf([200, 204]);
     expect(res.headers['access-control-allow-origin']).to.equal(env.corsOrigin);
   });
+
+  it('exposes Content-Disposition so the browser can read a download filename cross-origin', async () => {
+    const res = await request(app).get('/health').set('Origin', env.corsOrigin);
+
+    expect(res.headers['access-control-expose-headers']).to.include('Content-Disposition');
+  });
 });
